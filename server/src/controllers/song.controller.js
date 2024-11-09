@@ -1,8 +1,12 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import {
+  uploadOnCloudinary,
+  deleteFromCloudinary,
+} from "../utils/cloudinary.js";
 import { Song } from "../models/song.model.js";
+import { extractPublicId } from "cloudinary-build-url";
 
 const addSong = asyncHandler(async (req, res) => {
   const { name, desc, album } = req.body;
@@ -62,7 +66,24 @@ const listSong = asyncHandler(async (req, res) => {
 });
 
 const removeSong = asyncHandler(async (req, res) => {
-  
-})
+  const { id } = req.params;
+  //first delete files from the cloudinary
+  const { image, file } = await Song.findById(id);
 
-export { addSong, listSong };
+  const deletedImage = await deleteFromCloudinary(
+    extractPublicId(image),
+    "image"
+  );
+  const deletedFile = await deleteFromCloudinary(
+    extractPublicId(file),
+    "video"
+  );
+
+  const deletedSong = await Song.findByIdAndDelete(id);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, deletedSong, "song deleted!"));
+});
+
+export { addSong, listSong, removeSong };

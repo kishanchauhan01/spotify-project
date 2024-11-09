@@ -1,6 +1,11 @@
 import { Router } from "express";
-import { addSong, listSong } from "../controllers/song.controller.js";
+import {
+  addSong,
+  listSong,
+  removeSong,
+} from "../controllers/song.controller.js";
 import { upload } from "../middlewares/multer.midlleware.js";
+
 
 const router = Router();
 
@@ -17,6 +22,8 @@ router.route("/add").post(
   ]),
   addSong
 );
+
 router.route("/list").get(listSong);
+router.route("/remove/:id").post(removeSong);
 
 export default router;

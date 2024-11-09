@@ -22,7 +22,9 @@ app.get("/", (req, res) => {
 
 //initializing routes
 import songRouter from "./routes/song.route.js";
+import albumRoter from "./routes/album.route.js";
 
 app.use("/api/v1/song", songRouter);
+app.use("/api/v1/album", albumRoter);
 
 export { app };
